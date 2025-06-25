@@ -5,9 +5,6 @@ import com.aws.person.domain.spi.IPersonPersistencePort;
 import com.aws.person.infraestructure.output.jpa.entity.PersonEntity;
 import com.aws.person.infraestructure.output.jpa.mapper.PersonEntityMapper;
 import com.aws.person.infraestructure.output.jpa.repository.IPersonRepository;
-import com.aws.person.infraestructure.security.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 

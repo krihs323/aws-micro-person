@@ -2,11 +2,9 @@ package com.aws.person.domain.usercase;
 
 import com.aws.person.domain.exception.ExceptionValidationsResponse;
 import com.aws.person.domain.exception.PersonCaseValidationException;
-import com.aws.person.domain.model.Role;
 import com.aws.person.domain.model.Person;
 import com.aws.person.domain.spi.IPersonPersistencePort;
 import com.aws.person.domain.exception.PersonAlreadyExistException;
-import com.aws.person.domain.exception.PersonValidationException;
 import com.aws.person.domain.exception.ExceptionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
-class personUserCaseTest {
+class PersonUserCaseTest {
 
     @Mock
     private IPersonPersistencePort personPersistencePort;
@@ -39,9 +36,8 @@ class personUserCaseTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        LocalDate birthDate = LocalDate.of(1989,3,23);
-        person = new Person("Cristian", "Botina", 123456L, "3155828235",
-                birthDate, "cris@hotmail.com", "34567", Role.OWNER, 1L, null);
+        person = new Person("Cristian",  123456L,
+                 "cris@hotmail.com", 1L);
     }
 
 
@@ -54,31 +50,14 @@ class personUserCaseTest {
     }
 
     @Test
-    @DisplayName("Save owner should fail with OwnerValidationException")
-    void testErrorWhenIsNotAdult(){
-        doNothing().when(personPersistencePort).save(any());
-
-        LocalDate birthDate = LocalDate.of(2020,3,23);
-
-        PersonValidationException exception = assertThrows(PersonValidationException.class, () ->
-            new Person("Cristian", "Botina", 123456L, "3155828235",
-                    birthDate, "cris@hotmail.com", "34567", Role.ADMIN, 1L, null)
-        );
-        assertEquals(ExceptionValidationsResponse.PERSON_VALIATION_AGE.getMessage(), exception.getMessage());
-
-    }
-
-   
-
-    @Test
     @DisplayName("Get person by email")
     void findByEmail() {
 
-        Mockito.when(personPersistencePort.getPersonById(anyLong())).thenReturn(Optional.of(person));
+        Mockito.when(personPersistencePort.getPersonById(anyLong())).thenReturn(Optional.empty());
         PersonAlreadyExistException exception = assertThrows(PersonAlreadyExistException.class, () ->
             personUserCase.getPersonById(anyLong())
         );
-        assertEquals(ExceptionResponse.PERSON_VALIDATION_EXIST.getMessage(), exception.getMessage());
+        assertEquals(ExceptionResponse.PERSON_VALIDATION_NOT_FOUND.getMessage(), exception.getMessage());
     }
 
 
@@ -86,7 +65,7 @@ class personUserCaseTest {
     @Test
     @DisplayName("Save person should dont save")
     void savePersonVWhenpersonAlreadyExist() {
-        Mockito.when(personPersistencePort.getPersonById(person.getId())).thenReturn(Optional.of(person));
+        Mockito.when(personPersistencePort.getPersonByEmail(person.getEmail())).thenReturn(Optional.of(person));
 
         PersonAlreadyExistException exception = assertThrows(PersonAlreadyExistException.class, () ->
             personUserCase.savePerson(person)

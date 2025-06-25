@@ -46,6 +46,16 @@ public class PersonRestController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(summary = "Health Check")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rol found"),
+            @ApiResponse(responseCode = "404", description = "Owner not found", content = @Content)
+    })
+    @GetMapping()
+    public ResponseEntity<PersonResponse> heatlh() {
+        return ResponseEntity.ok().build();
+    }
+
  
 
    
